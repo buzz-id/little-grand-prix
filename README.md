@@ -13,7 +13,7 @@ A one-page web app with a racing theme that teaches numbers, addition, English a
 ## Run it
 
 Open `index.html` in any browser. There is no build step and no server.
-It loads fonts from Google Fonts (Racing Sans One, Fredoka, Nunito, Andika, Noto Sans SC) and falls back to system fonts when offline.
+Its fonts (Racing Sans One, Fredoka, Nunito, Andika, Noto Sans SC) ship with it in `fonts/`. Opened straight from disk, it works but cannot save itself for offline use; that needs a web address such as GitHub Pages.
 
 ## Online and on the home screen
 
@@ -25,7 +25,15 @@ To install it like an app:
 - **Windows (Edge or Chrome):** the install icon in the address bar.
 
 It opens full screen with the race car icon and the name "Grand Prix". The icon is drawn in `icons/icon.svg`; the PNG sizes next to it are rendered from that file.
-It still needs the internet the first time it opens each session, for the fonts and the page itself.
+
+## Offline
+
+Open the site once with internet. The service worker (`sw.js`) then saves the whole app on the device (about 450 KB), and it opens without wifi from then on. The grown-ups section says "Saved for offline play" once this has happened.
+
+- **Updates:** when online, the app checks for a newer version in the background. A new version shows the next time it is opened.
+- **Fonts:** they ship with the app in `fonts/`, trimmed to the characters the app uses. After adding new Chinese characters to `index.html`, run `pip install fonttools brotli` and then `python tools/subset_fonts.py`. Then bump `VERSION` in `sw.js`.
+- **Voices offline:** only voices installed on the device can speak. iPad and iPhone voices are installed. On Windows, Chrome's "Google" voices need internet, but the Microsoft voices (for example Huihui for Chinese) work offline.
+- **Fonts licence:** all fonts are under the SIL Open Font License; see `fonts/OFL-*.txt`.
 
 ## Sound
 

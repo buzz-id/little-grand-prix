@@ -16,9 +16,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#D7261E">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@500;700&family=Nunito:wght@400;700;800&family=Racing+Sans+One&display=swap">
+<style>
+/* Fonts ship with the app (fonts/, trimmed by tools/subset_fonts.py) so it works offline. */
+@font-face{font-family:"Fredoka";src:url(fonts/fredoka.woff2) format("woff2");font-weight:500 700;font-display:swap}
+@font-face{font-family:"Nunito";src:url(fonts/nunito.woff2) format("woff2");font-weight:400 800;font-display:swap}
+@font-face{font-family:"Andika";src:url(fonts/andika-regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Andika";src:url(fonts/andika-bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Racing Sans One";src:url(fonts/racing-sans-one.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Noto Sans SC";src:url(fonts/noto-sans-sc.woff2) format("woff2");font-weight:500 700;font-display:swap}
+</style>
 <style>
 /* Layout: one centred column of "pit boards" (cards). Every lesson is a race: 4 laps a day per subject, a chequered flag, a trophy. */
 :root{
@@ -353,6 +359,7 @@ button.car:hover{background:var(--surface-2);border-color:var(--line)}
       <h2 id="grownH">Ten minutes a day</h2>
     </div>
     <p class="voice" id="voiceNote">Checking which voices this device has…</p>
+    <p class="voice" id="offlineNote">Saving the app for offline play…</p>
     <div class="grown">
       <ul>
         <li>There are three races a day: Numbers, English and 中文. Each has 4 short laps and wins its own trophy. The same date and class always give the same race, so siblings can compare.</li>
@@ -365,6 +372,7 @@ button.car:hover{background:var(--surface-2);border-color:var(--line)}
         <li>Pinyin is shown under Chinese words so you can read them along. In Listen laps the pinyin stays hidden until the right answer is found.</li>
         <li>Wrong answers just fade out. Let your child try again. In the Grand Prix a missed question comes back later in the same race, and every race ends on the podium.</li>
         <li>Trophies, the streak and best stars are saved in this browser on this device only.</li>
+        <li>After one visit with internet the app works without wifi. Offline, only voices installed on the device can speak.</li>
       </ul>
     </div>
   </section>
@@ -410,9 +418,13 @@ function loadVoices(){try{voices=synth?synth.getVoices():[]}catch(e){voices=[]}v
   const h=String(canHear('en'))+canHear('zh');if(h!==hearState){const first=!hearState;hearState=h;if(!first&&race)newRace(true)}}
 const PREF={en:['en-sg','en-gb','en-au','en-in','en-us','en'],zh:['zh-cn','cmn','zh-sg','zh-tw','zh-hans']};
 function voiceFor(l){
-  for(const p of PREF[l]){const v=voices.find(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p));if(v)return v}
+  // Offline, only voices installed on the device can speak (online voices such as Chrome's "Google" ones go silent).
+  const usable=navigator.onLine===false?voices.filter(v=>v.localService):voices;
+  for(const p of PREF[l]){const v=usable.find(v=>(v.lang||'').replace('_','-').toLowerCase().startsWith(p));if(v)return v}
   return null;
 }
+window.addEventListener('online',()=>{voiceNote();if(race)newRace(true)});
+window.addEventListener('offline',()=>{voiceNote();if(race)newRace(true)});
 function canHear(l){return soundOn&&!!synth&&!!voiceFor(l)}
 function say(parts,force){
   if(!synth||!soundOn||(!acted&&!force))return;
@@ -428,7 +440,8 @@ function voiceNote(){
   const en=voiceFor('en'),zh=voiceFor('zh');
   const nm=v=>v.name.replace(/^Microsoft |^Google /,'');
   el.innerHTML=(en?`English voice: <b>${esc(nm(en))}</b>. `:'No English voice found. ')+
-    (zh?`Chinese voice: <b>${esc(nm(zh))}</b>.`:'No Mandarin voice found on this device, so Chinese words are shown with pinyin only. On Windows, add Chinese (Simplified) under Settings, Time & Language, Speech. Microsoft Edge also has Chinese voices built in.');
+    (zh?`Chinese voice: <b>${esc(nm(zh))}</b>.`:'No Mandarin voice found on this device, so Chinese words are shown with pinyin only. On Windows, add Chinese (Simplified) under Settings, Time & Language, Speech. Microsoft Edge also has Chinese voices built in.')+
+    (navigator.onLine===false?' You are offline, so only voices installed on this device are used.':'');
 }
 if(synth){loadVoices();try{synth.addEventListener('voiceschanged',loadVoices)}catch(e){synth.onvoiceschanged=loadVoices}}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -871,6 +884,15 @@ $$('[data-level]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lev
 $$('[data-sub]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sub===sub)));
 $('#heroArt').innerHTML=heroSVG();
 renderSound();renderStreak();renderWeek();newRace();gameStart();garage();voiceNote();
+
+/* ---------- offline: the service worker saves the app on this device after the first visit ---------- */
+(function(){
+  const el=$('#offlineNote');
+  if(!('serviceWorker' in navigator)||!/^https:|^http:\/\/(localhost|127\.0\.0\.1)/.test(location.href)){el.hidden=true;return}
+  navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(()=>{
+    el.innerHTML='<b>Saved for offline play.</b> This device can open Little Grand Prix without wifi. Add it to the home screen so it is easy to find.';
+  }).catch(()=>{el.hidden=true});
+})();
 // test hook: lets the smoke test build every question type without the UI
 window.__lgp={NUM,EN,ZH,mulberry,zhNum};
 })();
