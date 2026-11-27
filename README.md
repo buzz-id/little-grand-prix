@@ -15,6 +15,18 @@ A one-page web app with a racing theme that teaches numbers, addition, English a
 Open `index.html` in any browser. There is no build step and no server.
 It loads fonts from Google Fonts (Racing Sans One, Fredoka, Nunito, Andika, Noto Sans SC) and falls back to system fonts when offline.
 
+## Online and on the home screen
+
+The site is published with GitHub Pages at <https://buzz-id.github.io/little-grand-prix/> (Settings → Pages → Deploy from a branch → `main`, `/ (root)`).
+
+To install it like an app:
+- **iPad / iPhone (Safari):** Share → Add to Home Screen.
+- **Android (Chrome):** menu ⋮ → Add to Home screen / Install app.
+- **Windows (Edge or Chrome):** the install icon in the address bar.
+
+It opens full screen with the race car icon and the name "Grand Prix". The icon is drawn in `icons/icon.svg`; the PNG sizes next to it are rendered from that file.
+It still needs the internet the first time it opens each session, for the fonts and the page itself.
+
 ## Sound
 
 Questions are read aloud with the browser's built-in speech (Web Speech API): English for instructions and Mandarin for Chinese words.

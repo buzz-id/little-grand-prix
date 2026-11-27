@@ -1,5 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Little Grand Prix</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Daily races in Numbers, English and 中文 for 5 year olds.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grand Prix">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#D7261E">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&family=Noto+Sans+SC:wght@500;700&family=Nunito:wght@400;700;800&family=Racing+Sans+One&display=swap">
@@ -266,7 +282,8 @@ button.car:hover{background:var(--surface-2);border-color:var(--line)}
   .choice:hover:not(:disabled){transform:none}
 }
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header class="hero">
     <div class="hero-text">
@@ -858,3 +875,5 @@ renderSound();renderStreak();renderWeek();newRace();gameStart();garage();voiceNo
 window.__lgp={NUM,EN,ZH,mulberry,zhNum};
 })();
 </script>
+</body>
+</html>
