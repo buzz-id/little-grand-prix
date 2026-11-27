@@ -794,7 +794,7 @@ function gEnd(){
     <h3>Chequered flag! You finished on the podium.</h3>
     <div class="stars" role="img" aria-label="${stars} of 3 stars">${starSVG(true)}${starSVG(stars>=2)}${starSVG(stars>=3)}</div>
     <p><b>${fr} of 10</b> right on the first try.${nb?' That is a new best!':''}</p>
-    ${G.missed.length?`<div class="g-row"><span class="wk-l">Practise</span><div class="chips">${G.missed.map(m=>`<span class="chip${/[一-鿿]/.test(m)?' zh':''}">${esc(m)}</span>`).join('')}</div></div>`:'<p>No missed questions. Brilliant driving!</p>'}
+    ${G.missed.length?`<div class="g-row"><span class="wk-l">Practise</span><div class="chips">${[...new Set(G.missed)].map(m=>`<span class="chip${/[一-鿿]/.test(m)?' zh':''}">${esc(m)}</span>`).join('')}</div></div>`:'<p>No missed questions. Brilliant driving!</p>'}
     <div class="act" style="justify-content:flex-start"><button class="go" type="button" id="gAgain">Race again</button><button class="ghost" type="button" id="gMenu">Change race</button></div></div></div>`;
   say([['Chequered flag! You finished on the podium.','en']]);
   $('#gAgain').addEventListener('click',lightsOut);$('#gMenu').addEventListener('click',gameStart);
