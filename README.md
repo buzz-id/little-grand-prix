@@ -28,7 +28,7 @@ It opens full screen with the race car icon and the name "Grand Prix". The icon 
 
 ## Offline
 
-Open the site once with internet. The service worker (`sw.js`) then saves the whole app on the device (about 450 KB), and it opens without wifi from then on. The grown-ups section says "Saved for offline play" once this has happened.
+Open the site once with internet. The service worker (`sw.js`) then saves the whole app on the device (about 350 KB), and it opens without wifi from then on. The grown-ups section says "Saved for offline play" once this has happened.
 
 - **Updates:** when online, the app checks for a newer version in the background. A new version shows the next time it is opened.
 - **Fonts:** they ship with the app in `fonts/`, trimmed to the characters the app uses. After adding new Chinese characters to `index.html`, run `pip install fonttools brotli` and then `python tools/subset_fonts.py`. Then bump `VERSION` in `sw.js`.
